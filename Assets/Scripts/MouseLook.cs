@@ -54,19 +54,19 @@ public class MouseLook : MonoBehaviour {
 //			
 //			transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
 //		}
-		if (axes == RotationAxes.MouseXAndY)
-		{
-			if (Xon>.05){
-				transform.Rotate(0, Input.GetAxis("Joy X") * joysensitivityX, 0);
-			}
-			transform.Rotate(0, Input.GetAxis("Mouse X") * mousesensitivityX, 0);
-		}
+//		if (axes == RotationAxes.MouseXAndY)
+//		{
+//			if (Xon>.05){
+//				transform.Rotate(0, Input.GetAxis("Joy X") * joysensitivityX, 0);
+//			}
+////			transform.Rotate(0, Input.GetAxis("Mouse X") * mousesensitivityX, 0);
+//		}
 		if (axes == RotationAxes.MouseXAndY)
 		{
 			if (Yon>.05){
 				rotationY += Input.GetAxis("Joy Y") * joysensitivityY;
 			}
-			rotationY += Input.GetAxis("Mouse Y") * mousesensitivityY;
+//			rotationY += Input.GetAxis("Mouse Y") * mousesensitivityY;
 			rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);
 			
 			transform.localEulerAngles = new Vector3(-rotationY, transform.localEulerAngles.y, 0);
