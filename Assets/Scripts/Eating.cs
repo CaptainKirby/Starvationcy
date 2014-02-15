@@ -59,8 +59,10 @@ public class Eating : MonoBehaviour {
 	private float gold;
 	public float greaseComboIncrease = 1;
 	public GameObject comboObj;
+	private UILabel comboCounterGui;
 	void Start () 
 	{
+
 		timer = timerStart;
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Guest")) 
 		{
@@ -78,10 +80,12 @@ public class Eating : MonoBehaviour {
 		foodParticleInst = Instantiate(foodParticle, cam.transform.position + new Vector3(cam.transform.forward.x, cam.transform.forward.y - 0.5f, cam.transform.forward.z), foodParticle.transform.rotation) as GameObject;
 		foodParticleSystem = foodParticleInst.GetComponent<ParticleSystem>();
 		crosshair = cam.GetComponent<Crosshair>();
+		comboCounterGui = uiRootInst.transform.Find("ComboCount").gameObject.GetComponent<UILabel>();
 	}
 
 	void Update () 
 	{
+		comboCounterGui.text = "X" + greaseCombo;
 		timer -= Time.deltaTime;
 //		minutes = Mathf.Floor(timer / 60).ToString("00");
 //		seconds = (timer % 60).ToString("00");
@@ -139,17 +143,20 @@ public class Eating : MonoBehaviour {
 			{
 				hitFood = true;
 				crosshair.crosshairTexture = crosshair.crosshairGoTex;
+				crosshair.crosshairSize = 25;
 			}
 			else
 			{
 				hitFood = false;
 				crosshair.crosshairTexture = crosshair.crosshairNeutralTex;
+				crosshair.crosshairSize = 5;
 			}
 		}
 		else
 		{
 			hitFood = false;
 			crosshair.crosshairTexture = crosshair.crosshairNeutralTex;
+			crosshair.crosshairSize = 5;
 		}
 
 		if(guests.Count > 0)
@@ -275,9 +282,14 @@ public class Eating : MonoBehaviour {
 		{
 			GameObject combo = Instantiate(comboObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
 			combo.transform.parent = uiRootInst.transform;
+
 			greaseLevel += 10;
 			gold += Random.Range(850, 1200) * greaseCombo;
 			greaseCombo += greaseComboIncrease;
+			combo.GetComponent<UILabel>().text = "X" + greaseCombo;
+			food.gameObject.SetActive(false);
+			yield return new WaitForSeconds(1.5f);
+			combo.SetActive(false);
 		}
 
 		if(food.GetComponent<Food>().healthy)
@@ -287,7 +299,10 @@ public class Eating : MonoBehaviour {
 			gold += Random.Range(250, 400);
 		}
 		foodPicked = false;
-		food.gameObject.SetActive(false);
+		if(food.gameObject.activeSelf)
+		{
+			food.gameObject.SetActive(false);
+		}
 
 		yield return null;
 	}
