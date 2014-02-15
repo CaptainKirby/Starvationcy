@@ -43,7 +43,7 @@ public class Guest : MonoBehaviour {
 			finalPosition = hit.position;
 			agent.SetDestination(finalPosition);
 		}
-		if(agent.velocity.magnitude < 1)
+		if(agent.velocity.magnitude < 0.1f)
 		{
 			randomDirection = Random.insideUnitSphere * walkRadius;
 			randomDirection += transform.position;
