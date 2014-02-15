@@ -39,7 +39,7 @@ public class Movement : MonoBehaviour {
 
 		motor.inputMoveDirection = (transform.forward * Input.GetAxis("Vertical")) + (transform.right * Input.GetAxis("Horizontal"));
 //		motor.inputMoveDirection = transform.right * Input.GetAxis("Horizontal");
-		Debug.Log (transform.forward.z);
+//		Debug.Log (transform.forward.z);
 		motor.inputJump = Input.GetKey(KeyCode.Space);
 		
 		
@@ -47,7 +47,7 @@ public class Movement : MonoBehaviour {
 	
 	void FixedUpdate()
 	{
-		Debug.Log (motor.grounded);
+//		Debug.Log (motor.grounded);
 		
 		
 	}
