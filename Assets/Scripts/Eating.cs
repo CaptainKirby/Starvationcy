@@ -52,10 +52,15 @@ public class Eating : MonoBehaviour {
 	public float sightRange = 10f;
 	private float greaseLevel = 10f;
 	private float greaseCombo = 1;
+//	private float minutes;
+//	private float seconds;
+	private float timer;
+	public float timerStart = 70;
 	private float gold;
 	public float greaseComboIncrease = 1;
 	void Start () 
 	{
+		timer = timerStart;
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Guest")) 
 		{
 			guestCount += 1;
@@ -76,6 +81,17 @@ public class Eating : MonoBehaviour {
 
 	void Update () 
 	{
+		timer -= Time.deltaTime;
+//		minutes = Mathf.Floor(timer / 60).ToString("00");
+//		seconds = (timer % 60).ToString("00");
+
+//		if(minutes < 10) {
+//			minutes = "0" + minutes.ToString();
+//		}
+//		if(seconds < 10) {
+//			seconds = "0" + Mathf.RoundToInt(seconds).ToString();
+//		}
+
 		foodEatInterval = foodMeter/ (foodMeterStart);
 
 		foodMeter = greaseLevel;
@@ -95,6 +111,11 @@ public class Eating : MonoBehaviour {
 			}
 		}
 
+		if(timer < 0)
+		{
+			starved = true;
+			StartCoroutine(Starve());
+		}
 
 		if(Input.GetKeyDown(KeyCode.JoystickButton0) && !foodPicked)
 		{
@@ -276,7 +297,14 @@ public class Eating : MonoBehaviour {
 
 	void OnGUI()
 	{
-		GUI.Label(new Rect(Screen.width - 300, Screen.height - 100,200, 50),"Gold: " + gold);
+		int minutes = Mathf.FloorToInt(timer / 60F);
+		int seconds = Mathf.FloorToInt(timer - minutes * 60);
+		
+		string niceTime = string.Format("{0:0}:{1:00}", minutes, seconds);
+		
+		GUI.Label(new Rect(10,10,250,100), niceTime);
+
+		GUI.Label(new Rect(Screen.width - 300, Screen.height - 100,200, 50),"Cost: " + gold);
 		if(seen)
 		{
 			GUI.DrawTexture(new Rect((Screen.width - eyeSize) / 2, (Screen.height - eyeSize)- 20, eyeSize, eyeSize), eyeOpen);
@@ -291,7 +319,7 @@ public class Eating : MonoBehaviour {
 		}
 		if(starved)
 		{
-			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YOU STARVED! EAT FASTER!!");
+			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YYOU ARE DONE EATING!");
 		}
 	}
 
