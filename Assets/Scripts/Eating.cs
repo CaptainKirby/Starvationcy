@@ -37,6 +37,7 @@ public class Eating : MonoBehaviour {
 	private float foodMeter = 100;
 	private float foodMeterStart;
 
+	public GameObject prevFood;
 	public float foodmeterDecayRate = 3;
 	public float foodGain = 20;
 	public GameObject uiRoot;
@@ -157,15 +158,25 @@ public class Eating : MonoBehaviour {
 		{
 			if(hit.transform.gameObject.tag == "Food")
 			{
+				prevFood = hit.transform.gameObject;
 				hitFood = true;
 				crosshair.crosshairTexture = crosshair.crosshairGoTex;
 				crosshair.crosshairSize = 25;
+//				if(renderer.material.name "FoodOutline (Instance)")
+//				{
+					prevFood.renderer.material.SetFloat("_EdgeWidth", 1);
+//				}
 			}
 			else
 			{
 				hitFood = false;
 				crosshair.crosshairTexture = crosshair.crosshairNeutralTex;
 				crosshair.crosshairSize = 5;
+				if(prevFood)
+				{
+					prevFood.renderer.material.SetFloat("_EdgeWidth", 0);
+				}
+
 			}
 		}
 		else
@@ -173,6 +184,10 @@ public class Eating : MonoBehaviour {
 			hitFood = false;
 			crosshair.crosshairTexture = crosshair.crosshairNeutralTex;
 			crosshair.crosshairSize = 5;
+			if(prevFood)
+			{
+				prevFood.renderer.material.SetFloat("_EdgeWidth", 0);
+			}
 		}
 
 		if(guests.Count > 0)
