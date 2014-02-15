@@ -59,7 +59,10 @@ public class Eating : MonoBehaviour {
 	private float gold;
 	public float greaseComboIncrease = 1;
 	public GameObject comboObj;
+	public GameObject goldGetObj;
 	private UILabel comboCounterGui;
+	private UILabel goldCounterGui;
+	private UILabel timerGui;
 	void Start () 
 	{
 
@@ -81,10 +84,23 @@ public class Eating : MonoBehaviour {
 		foodParticleSystem = foodParticleInst.GetComponent<ParticleSystem>();
 		crosshair = cam.GetComponent<Crosshair>();
 		comboCounterGui = uiRootInst.transform.Find("ComboCount").gameObject.GetComponent<UILabel>();
+		goldCounterGui = uiRootInst.transform.Find("GoldCount").gameObject.GetComponent<UILabel>();
+		timerGui = uiRootInst.transform.Find("Time").gameObject.GetComponent<UILabel>();
+
+		
 	}
 
 	void Update () 
 	{
+
+		int minutes = Mathf.FloorToInt(timer / 60F);
+		int seconds = Mathf.FloorToInt(timer - minutes * 60);
+		
+		string niceTime = string.Format("{0:0}:{1:00}", minutes, seconds);
+
+		timerGui.text = niceTime;
+
+		goldCounterGui.text = "$" + gold;
 		comboCounterGui.text = "X" + greaseCombo;
 		timer -= Time.deltaTime;
 //		minutes = Mathf.Floor(timer / 60).ToString("00");
@@ -103,7 +119,7 @@ public class Eating : MonoBehaviour {
 
 
 
-		foodbarSprite.color = Color.Lerp(botColor, topColor, greaseLevel/10);
+		foodbarSprite.color = Color.Lerp(botColor, topColor, foodMeter/foodMeterStart);
 		foodbarSprite.fillAmount = foodMeter/foodMeterStart;
 		if(foodPicked)
 		{
@@ -217,6 +233,20 @@ public class Eating : MonoBehaviour {
 		eating = true;
 		takingBite = true;
 		foodComponent.health -= 1;
+		GameObject goldBj = Instantiate(goldGetObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
+		goldBj.transform.parent = uiRootInst.transform;
+		if(food.GetComponent<Food>().greasy)
+		{
+			float rngGold = Random.Range(850, 1200) * greaseCombo;
+			goldBj.GetComponent<UILabel>().text = "$ " + rngGold;
+			gold += rngGold;
+		}
+		if(food.GetComponent<Food>().healthy)
+		{
+			float rngGold = Random.Range(200, 400) * greaseCombo;
+			goldBj.GetComponent<UILabel>().text = "$ " + rngGold;
+			gold += rngGold;
+		}
 		if((foodMeter + foodGain) < foodMeterStart)
 		{
 		foodMeter += foodGain;
@@ -230,6 +260,7 @@ public class Eating : MonoBehaviour {
 		foodParticleSystem.Play();
 
 		yield return new WaitForSeconds(foodEatInterval/2);
+
 		if(seen)  caught = true;
 		yield return new WaitForSeconds(foodEatInterval/2);
 		if(caught)
@@ -237,12 +268,16 @@ public class Eating : MonoBehaviour {
 			yield return new WaitForSeconds(1);
 			Application.LoadLevel(Application.loadedLevel);
 		}
+
 		takingBite = false;
 		eating = false;
 		if(foodComponent.health == 0)
 		{
 			StartCoroutine(FoodEaten());
 		}
+
+		yield return new WaitForSeconds(0.2f);
+		goldBj.SetActive(false);
 	}
 
 	IEnumerator FoodShake()
@@ -284,7 +319,7 @@ public class Eating : MonoBehaviour {
 			combo.transform.parent = uiRootInst.transform;
 
 			greaseLevel += 10;
-			gold += Random.Range(850, 1200) * greaseCombo;
+
 			greaseCombo += greaseComboIncrease;
 			combo.GetComponent<UILabel>().text = "X" + greaseCombo;
 			food.gameObject.SetActive(false);
@@ -296,7 +331,7 @@ public class Eating : MonoBehaviour {
 		{
 			greaseLevel -= 20;
 			greaseCombo = 0;
-			gold += Random.Range(250, 400);
+//			gold += Random.Range(250, 400);
 		}
 		foodPicked = false;
 		if(food.gameObject.activeSelf)
@@ -315,14 +350,11 @@ public class Eating : MonoBehaviour {
 
 	void OnGUI()
 	{
-		int minutes = Mathf.FloorToInt(timer / 60F);
-		int seconds = Mathf.FloorToInt(timer - minutes * 60);
-		
-		string niceTime = string.Format("{0:0}:{1:00}", minutes, seconds);
-		
-		GUI.Label(new Rect(10,10,250,100), niceTime);
 
-		GUI.Label(new Rect(Screen.width - 300, Screen.height - 100,200, 50),"Cost: " + gold);
+		
+//		GUI.Label(new Rect(10,10,250,100), niceTime);
+
+//		GUI.Label(new Rect(Screen.width - 300, Screen.height - 100,200, 50),"Cost: " + gold);
 		if(seen)
 		{
 			GUI.DrawTexture(new Rect((Screen.width - eyeSize) / 2, (Screen.height - eyeSize)- 20, eyeSize, eyeSize), eyeOpen);
