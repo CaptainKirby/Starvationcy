@@ -31,8 +31,21 @@ public class Eating : MonoBehaviour {
 	public Texture2D eyeOpen;
 	public Texture2D eyeClosed;
 	public float eyeSize = 25;
+	public float foodMeter = 100;
+	private float foodMeterStart;
+
+	public GameObject uiRoot;
+	private GameObject uiRootInst;
+//	private GameObject foodbarObj;
+	private UISprite foodbarSprite;
+	public Color topColor = Color.green;
+	public Color botColor = Color.red;
 	void Start () 
 	{
+		foodMeterStart = foodMeter;
+		uiRootInst = Instantiate(uiRoot, new Vector3(9999,9999,9999), uiRoot.transform.rotation) as GameObject;
+		foodbarSprite = uiRootInst.GetComponentInChildren<UISprite>();
+		foodbarSprite.color = topColor;
 		camShake = GetComponent<CameraShake>();
 		cam = Camera.main.transform;
 		foodParticleInst = Instantiate(foodParticle, cam.transform.position + new Vector3(cam.transform.forward.x, cam.transform.forward.y - 0.5f, cam.transform.forward.z), foodParticle.transform.rotation) as GameObject;
@@ -42,6 +55,8 @@ public class Eating : MonoBehaviour {
 
 	void Update () 
 	{
+		foodbarSprite.color = Color.Lerp(botColor, topColor, foodMeter/foodMeterStart);
+		foodbarSprite.fillAmount = foodMeter/foodMeterStart;
 		if(foodPicked)
 		{
 			if(Input.GetKeyDown(KeyCode.JoystickButton1))
