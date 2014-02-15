@@ -7,6 +7,11 @@ public class Food : MonoBehaviour {
 	public bool greasy; 
 	void Start () {
 
+		if(renderer.material.name == "FoodOutline (Instance)")
+		{
+			renderer.material.SetFloat("_EdgeWidth", 0);
+		}
+
 	}
 
 
