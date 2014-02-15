@@ -29,8 +29,8 @@ public class Guest : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		if(seeing) eating.seen = true;
-		else eating.seen = false;
+//		if(seeing) eating.seen = true;
+//		else eating.seen = false;
 
 
 		dist = Vector3.Distance(this.transform.position, finalPosition);

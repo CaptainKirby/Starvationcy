@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Eating : MonoBehaviour {
 
@@ -28,21 +29,37 @@ public class Eating : MonoBehaviour {
 	private bool caught;
 	[HideInInspector]
 	public bool seen;
+	[HideInInspector]
+	public bool starved;
 	public Texture2D eyeOpen;
 	public Texture2D eyeClosed;
 	public float eyeSize = 25;
-	public float foodMeter = 100;
+	private float foodMeter = 100;
 	private float foodMeterStart;
 
+	public float foodmeterDecayRate = 3;
+	public float foodGain = 20;
 	public GameObject uiRoot;
 	private GameObject uiRootInst;
 //	private GameObject foodbarObj;
 	private UISprite foodbarSprite;
 	public Color topColor = Color.green;
 	public Color botColor = Color.red;
+	public List<GameObject> guests;
+	public List<GameObject> notSeeingGuests;
+	private int guestCount;
+	private Vector3 fwd;
+	public float sightRange = 10f;
 	void Start () 
 	{
+		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Guest")) 
+		{
+			guestCount += 1;
+			guests.Add(go);
+		}
 		foodMeterStart = foodMeter;
+		foodMeter = foodMeter/1.5f;
+		foodEatInterval = foodMeter/ (foodMeterStart);
 		uiRootInst = Instantiate(uiRoot, new Vector3(9999,9999,9999), uiRoot.transform.rotation) as GameObject;
 		foodbarSprite = uiRootInst.GetComponentInChildren<UISprite>();
 		foodbarSprite.color = topColor;
@@ -55,6 +72,17 @@ public class Eating : MonoBehaviour {
 
 	void Update () 
 	{
+		foodEatInterval = foodMeter/ (foodMeterStart);
+		if(foodMeter > 0)
+		{
+			foodMeter -= Time.deltaTime * foodmeterDecayRate;
+		}
+		else
+		{
+			StartCoroutine(Starve());
+			starved = true;
+		}
+
 		foodbarSprite.color = Color.Lerp(botColor, topColor, foodMeter/foodMeterStart);
 		foodbarSprite.fillAmount = foodMeter/foodMeterStart;
 		if(foodPicked)
@@ -102,6 +130,50 @@ public class Eating : MonoBehaviour {
 			hitFood = false;
 			crosshair.crosshairTexture = crosshair.crosshairNeutralTex;
 		}
+
+		if(guests.Count > 0)
+		{
+			foreach(GameObject gObj in guests)
+			{
+				if(!gObj.GetComponent<Guest>().seeing)
+				{
+					if(!notSeeingGuests.Contains(gObj))
+					{
+						notSeeingGuests.Add(gObj);
+					}
+				}
+				if(gObj.GetComponent<Guest>().seeing)
+				{
+					if(notSeeingGuests.Contains(gObj))
+					{
+						notSeeingGuests.Remove(gObj);
+					}
+				}
+			}
+		}
+
+		if(notSeeingGuests.Count == guests.Count)
+		{
+			seen = false;
+		}
+		else seen = true;
+//				Debug.DrawRay(transform.position + new Vector3(0, 1, 0),fwd * sightRange,Color.green);
+//				fwd = (gObj.transform.position - transform.position).normalized;
+//				RaycastHit hitRay;
+//				if (Physics.Raycast (transform.position, fwd,out hitRay, sightRange)) 
+//				{
+//					Debug.Log (hitRay.transform.gameObject);
+////					seen = true;
+//					if(hitRay.transform.gameObject.CompareTag("Guest"))
+//					{
+//
+//						seen = true;
+//					}
+////					else seen = false;
+//				}
+////				else seen = false;
+//			}
+//		}
 //		
 	}
 
@@ -117,8 +189,14 @@ public class Eating : MonoBehaviour {
 		eating = true;
 		takingBite = true;
 		foodComponent.health -= 1;
+		if((foodMeter + foodGain) < foodMeterStart)
+		{
+		foodMeter += foodGain;
+		}
 //		StartCoroutine(FoodShake ());
+		food.transform.localScale = food.transform.localScale * 0.8f;
 		camShake.Shake();
+		foodParticleSystem.Stop();
 		foodParticleInst.transform.position = cam.transform.position + new Vector3(cam.transform.forward.x, cam.transform.forward.y - 0.5f, cam.transform.forward.z);
 
 		foodParticleSystem.Play();
@@ -177,6 +255,12 @@ public class Eating : MonoBehaviour {
 		yield return null;
 	}
 
+	IEnumerator Starve()
+	{
+		yield return new WaitForSeconds(1);
+		Application.LoadLevel(Application.loadedLevel);
+	}
+
 	void OnGUI()
 	{
 		if(seen)
@@ -190,6 +274,10 @@ public class Eating : MonoBehaviour {
 		if(caught)
 		{
 			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YOU'VE BEEN SEEN EATING, YOU FILTH");
+		}
+		if(starved)
+		{
+			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YOU STARVED! EAT FASTER!!");
 		}
 	}
 
