@@ -43,6 +43,15 @@ public class Guest : MonoBehaviour {
 			finalPosition = hit.position;
 			agent.SetDestination(finalPosition);
 		}
+		if(agent.velocity.magnitude < 1)
+		{
+			randomDirection = Random.insideUnitSphere * walkRadius;
+			randomDirection += transform.position;
+			NavMeshHit hit;
+			NavMesh.SamplePosition(randomDirection, out hit, walkRadius, 1);
+			finalPosition = hit.position;
+			agent.SetDestination(finalPosition);
+		}
 
 		fwd = (player.position - transform.position).normalized;
 		RaycastHit hitRay;
