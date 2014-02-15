@@ -305,8 +305,9 @@ public class Eating : MonoBehaviour {
 		yield return new WaitForSeconds(foodEatInterval/2);
 		if(caught)
 		{
-			yield return new WaitForSeconds(1);
-			Application.LoadLevel(Application.loadedLevel);
+			StartCoroutine(Starve ());
+//			yield return new WaitForSeconds(1);
+//			Application.LoadLevel(Application.loadedLevel);
 		}
 
 		takingBite = false;
@@ -426,10 +427,10 @@ public class Eating : MonoBehaviour {
 		{
 			GUI.DrawTexture(new Rect((Screen.width - eyeSize) / 2, (Screen.height - eyeSize)- 20, eyeSize, eyeSize), eyeClosed);
 		}
-		if(caught)
-		{
-			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YOU'VE BEEN SEEN EATING, YOU FILTH");
-		}
+//		if(caught)
+//		{
+//			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YOU'VE BEEN SEEN EATING, YOU FILTH");
+//		}
 //		if(starved)
 //		{
 //			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YYOU ARE DONE EATING!");
