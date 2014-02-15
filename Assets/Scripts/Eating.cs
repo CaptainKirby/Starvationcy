@@ -50,6 +50,10 @@ public class Eating : MonoBehaviour {
 	private int guestCount;
 	private Vector3 fwd;
 	public float sightRange = 10f;
+	private float greaseLevel = 10f;
+	private float greaseCombo = 1;
+	private float gold;
+	public float greaseComboIncrease = 1;
 	void Start () 
 	{
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Guest")) 
@@ -58,7 +62,7 @@ public class Eating : MonoBehaviour {
 			guests.Add(go);
 		}
 		foodMeterStart = foodMeter;
-		foodMeter = foodMeter/1.5f;
+		foodMeter = greaseLevel;
 		foodEatInterval = foodMeter/ (foodMeterStart);
 		uiRootInst = Instantiate(uiRoot, new Vector3(9999,9999,9999), uiRoot.transform.rotation) as GameObject;
 		foodbarSprite = uiRootInst.GetComponentInChildren<UISprite>();
@@ -73,17 +77,12 @@ public class Eating : MonoBehaviour {
 	void Update () 
 	{
 		foodEatInterval = foodMeter/ (foodMeterStart);
-		if(foodMeter > 0)
-		{
-			foodMeter -= Time.deltaTime * foodmeterDecayRate;
-		}
-		else
-		{
-			StartCoroutine(Starve());
-			starved = true;
-		}
 
-		foodbarSprite.color = Color.Lerp(botColor, topColor, foodMeter/foodMeterStart);
+		foodMeter = greaseLevel;
+
+
+
+		foodbarSprite.color = Color.Lerp(botColor, topColor, greaseLevel/10);
 		foodbarSprite.fillAmount = foodMeter/foodMeterStart;
 		if(foodPicked)
 		{
@@ -250,8 +249,22 @@ public class Eating : MonoBehaviour {
 	}
 	IEnumerator FoodEaten()
 	{
+		if(food.GetComponent<Food>().greasy)
+		{
+			greaseLevel += 10;
+			gold += Random.Range(850, 1200) * greaseCombo;
+			greaseCombo += greaseComboIncrease;
+		}
+
+		if(food.GetComponent<Food>().healthy)
+		{
+			greaseLevel -= 20;
+			greaseCombo = 0;
+			gold += Random.Range(250, 400);
+		}
 		foodPicked = false;
 		food.gameObject.SetActive(false);
+
 		yield return null;
 	}
 
@@ -263,6 +276,7 @@ public class Eating : MonoBehaviour {
 
 	void OnGUI()
 	{
+		GUI.Label(new Rect(Screen.width - 300, Screen.height - 100,200, 50),"Gold: " + gold);
 		if(seen)
 		{
 			GUI.DrawTexture(new Rect((Screen.width - eyeSize) / 2, (Screen.height - eyeSize)- 20, eyeSize, eyeSize), eyeOpen);
