@@ -58,6 +58,7 @@ public class Eating : MonoBehaviour {
 	public float timerStart = 70;
 	private float gold;
 	public float greaseComboIncrease = 1;
+	public GameObject comboObj;
 	void Start () 
 	{
 		timer = timerStart;
@@ -272,6 +273,8 @@ public class Eating : MonoBehaviour {
 	{
 		if(food.GetComponent<Food>().greasy)
 		{
+			GameObject combo = Instantiate(comboObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
+			combo.transform.parent = uiRootInst.transform;
 			greaseLevel += 10;
 			gold += Random.Range(850, 1200) * greaseCombo;
 			greaseCombo += greaseComboIncrease;
