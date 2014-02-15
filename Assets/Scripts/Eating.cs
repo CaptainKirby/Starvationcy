@@ -28,6 +28,9 @@ public class Eating : MonoBehaviour {
 	private bool caught;
 	[HideInInspector]
 	public bool seen;
+	public Texture2D eyeOpen;
+	public Texture2D eyeClosed;
+	public float eyeSize = 25;
 	void Start () 
 	{
 		camShake = GetComponent<CameraShake>();
@@ -161,6 +164,14 @@ public class Eating : MonoBehaviour {
 
 	void OnGUI()
 	{
+		if(seen)
+		{
+			GUI.DrawTexture(new Rect((Screen.width - eyeSize) / 2, (Screen.height - eyeSize)- 20, eyeSize, eyeSize), eyeOpen);
+		}
+		if(!seen)
+		{
+			GUI.DrawTexture(new Rect((Screen.width - eyeSize) / 2, (Screen.height - eyeSize)- 20, eyeSize, eyeSize), eyeClosed);
+		}
 		if(caught)
 		{
 			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YOU'VE BEEN SEEN EATING, YOU FILTH");
