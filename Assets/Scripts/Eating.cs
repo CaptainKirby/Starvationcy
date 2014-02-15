@@ -18,13 +18,16 @@ public class Eating : MonoBehaviour {
 	private Food foodComponent;
 	private bool takingBite;
 	public float foodEatInterval = 0.5f;
-
+	[HideInInspector]
+	public bool eating;
 	public GameObject foodParticle;
 	private GameObject foodParticleInst;
 	private ParticleSystem foodParticleSystem;
+
+	private CameraShake camShake;
 	void Start () 
 	{
-
+		camShake = GetComponent<CameraShake>();
 		cam = Camera.main.transform;
 		foodParticleInst = Instantiate(foodParticle, cam.transform.position + new Vector3(cam.transform.forward.x, cam.transform.forward.y - 0.5f, cam.transform.forward.z), foodParticle.transform.rotation) as GameObject;
 		foodParticleSystem = foodParticleInst.GetComponent<ParticleSystem>();
@@ -35,13 +38,10 @@ public class Eating : MonoBehaviour {
 	{
 		if(foodPicked)
 		{
-			if(foodComponent.health == 0)
-			{
-				StartCoroutine(FoodEaten());
-			}
+
 			if(Input.GetKeyDown(KeyCode.JoystickButton1))
 			{
-				if(foodComponent.health > 0 && !takingBite)
+				if(!takingBite)
 				{
 					StartCoroutine(TakeBite());
 				}
@@ -93,17 +93,25 @@ public class Eating : MonoBehaviour {
 
 	IEnumerator TakeBite()
 	{
-		Debug.Log ("BITE!");
+//		Debug.Log ("BITE!");
+		eating = true;
 		takingBite = true;
 		foodComponent.health -= 1;
 //		StartCoroutine(FoodShake ());
+		camShake.Shake();
 		foodParticleInst.transform.position = cam.transform.position + new Vector3(cam.transform.forward.x, cam.transform.forward.y - 0.5f, cam.transform.forward.z);
 
 		foodParticleSystem.Play();
 //		float y =  Mathf.Sin(Time. * 1.0f);
 //		food.transform.position = new Vector3(food.transform.position.x, food.transform.position.y + y, food.transform.position.z);
 		yield return new WaitForSeconds(foodEatInterval);
+
 		takingBite = false;
+		eating = false;
+		if(foodComponent.health == 0)
+		{
+			StartCoroutine(FoodEaten());
+		}
 	}
 
 	IEnumerator FoodShake()
