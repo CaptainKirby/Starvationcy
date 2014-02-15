@@ -12,9 +12,9 @@ public class Crosshair : MonoBehaviour {
 	void Start () 
 	{
 		crosshairTexture = crosshairNeutralTex;
-		position = new Rect((Screen.width - crosshairSize) / 2, (Screen.height - crosshairSize) /2, crosshairSize, crosshairSize);
+
 	}
-	
+
 
 	
 	void OnGUI()
@@ -25,6 +25,6 @@ public class Crosshair : MonoBehaviour {
 //		}
 	}
 	void Update () {
-	
+		position = new Rect((Screen.width - crosshairSize) / 2, (Screen.height - crosshairSize) /2, crosshairSize, crosshairSize);
 	}
 }
