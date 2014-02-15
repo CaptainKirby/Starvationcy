@@ -12,8 +12,11 @@ public class Guest : MonoBehaviour {
 	public float sightRange = 10f;
 	private Vector3 fwd;
 	public bool seeing;
+	private Eating eating;
 	void Start () {
+
 		player = GameObject.Find("Player").transform;
+		eating = player.GetComponent<Eating>();
 		agent = GetComponent<NavMeshAgent>();
 		randomDirection = Random.insideUnitSphere * walkRadius;
 		randomDirection += transform.position;
@@ -26,6 +29,10 @@ public class Guest : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
+		if(seeing) eating.seen = true;
+		else eating.seen = false;
+
+
 		dist = Vector3.Distance(this.transform.position, finalPosition);
 		if(dist < 2f)
 		{
@@ -38,7 +45,6 @@ public class Guest : MonoBehaviour {
 		}
 
 		fwd = (player.position - transform.position).normalized;
-
 		RaycastHit hitRay;
 
 		if (Physics.Raycast (transform.position, fwd,out hitRay, sightRange)) 

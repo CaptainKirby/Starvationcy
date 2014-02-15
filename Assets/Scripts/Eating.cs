@@ -25,6 +25,9 @@ public class Eating : MonoBehaviour {
 	private ParticleSystem foodParticleSystem;
 
 	private CameraShake camShake;
+	private bool caught;
+	[HideInInspector]
+	public bool seen;
 	void Start () 
 	{
 		camShake = GetComponent<CameraShake>();
@@ -38,7 +41,6 @@ public class Eating : MonoBehaviour {
 	{
 		if(foodPicked)
 		{
-
 			if(Input.GetKeyDown(KeyCode.JoystickButton1))
 			{
 				if(!takingBite)
@@ -102,10 +104,15 @@ public class Eating : MonoBehaviour {
 		foodParticleInst.transform.position = cam.transform.position + new Vector3(cam.transform.forward.x, cam.transform.forward.y - 0.5f, cam.transform.forward.z);
 
 		foodParticleSystem.Play();
-//		float y =  Mathf.Sin(Time. * 1.0f);
-//		food.transform.position = new Vector3(food.transform.position.x, food.transform.position.y + y, food.transform.position.z);
-		yield return new WaitForSeconds(foodEatInterval);
 
+		yield return new WaitForSeconds(foodEatInterval/2);
+		if(seen)  caught = true;
+		yield return new WaitForSeconds(foodEatInterval/2);
+		if(caught)
+		{
+			yield return new WaitForSeconds(1);
+			Application.LoadLevel(Application.loadedLevel);
+		}
 		takingBite = false;
 		eating = false;
 		if(foodComponent.health == 0)
@@ -150,6 +157,14 @@ public class Eating : MonoBehaviour {
 		foodPicked = false;
 		food.gameObject.SetActive(false);
 		yield return null;
+	}
+
+	void OnGUI()
+	{
+		if(caught)
+		{
+			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YOU'VE BEEN SEEN EATING, YOU FILTH");
+		}
 	}
 
 }
