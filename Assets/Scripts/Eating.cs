@@ -62,9 +62,16 @@ public class Eating : MonoBehaviour {
 	public float greaseComboIncrease = 1;
 	public GameObject comboObj;
 	public GameObject goldGetObj;
+	public GameObject commentObj;
+	public GameObject lastCommentObj;
+
 	private UILabel comboCounterGui;
 	private UILabel goldCounterGui;
 	private UILabel timerGui;
+
+	public List<string> greasyComments;
+	public List<string> healthyComments;
+	public List<string> lastComments;
 	void Start () 
 	{
 
@@ -86,6 +93,7 @@ public class Eating : MonoBehaviour {
 		foodParticleSystem = foodParticleInst.GetComponent<ParticleSystem>();
 		crosshair = cam.GetComponent<Crosshair>();
 		comboCounterGui = uiRootInst.transform.Find("ComboCount").gameObject.GetComponent<UILabel>();
+		goldCounterGui = uiRootInst.transform.Find("GoldCount").gameObject.GetComponent<UILabel>();
 		goldCounterGui = uiRootInst.transform.Find("GoldCount").gameObject.GetComponent<UILabel>();
 		timerGui = uiRootInst.transform.Find("Time").gameObject.GetComponent<UILabel>();
 
@@ -134,10 +142,11 @@ public class Eating : MonoBehaviour {
 			}
 		}
 
-		if(timer < 0)
+		if(timer < 0 && !starved)
 		{
 			starved = true;
 			StartCoroutine(Starve());
+//			starved = false;
 		}
 
 		if(Input.GetKeyDown(KeyCode.JoystickButton0) && !foodPicked)
@@ -349,6 +358,12 @@ public class Eating : MonoBehaviour {
 			GameObject combo = Instantiate(comboObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
 			combo.transform.parent = uiRootInst.transform;
 
+			GameObject comment = Instantiate(commentObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
+			comment.transform.parent = uiRootInst.transform;
+			int rng = Random.Range(0,greasyComments.Count);
+			comment.GetComponent<UILabel>().text = greasyComments[rng] + "!";
+			lastComments.Add(greasyComments[rng]);
+
 			greaseLevel += 10;
 
 			greaseCombo += greaseComboIncrease;
@@ -356,12 +371,21 @@ public class Eating : MonoBehaviour {
 			food.gameObject.SetActive(false);
 			yield return new WaitForSeconds(1.5f);
 			combo.SetActive(false);
+			comment.SetActive(false);
 		}
 
 		if(food.GetComponent<Food>().healthy)
 		{
+			GameObject comment = Instantiate(commentObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
+			comment.transform.parent = uiRootInst.transform;
+			int rng = Random.Range(0,healthyComments.Count);
+			comment.GetComponent<UILabel>().text = healthyComments[rng] + "!";
+			lastComments.Add(healthyComments[rng]);
+
 			greaseLevel -= 20;
 			greaseCombo = 0;
+			yield return new WaitForSeconds(1.5f);
+			comment.SetActive(false);
 //			gold += Random.Range(250, 400);
 		}
 		foodPicked = false;
@@ -375,7 +399,15 @@ public class Eating : MonoBehaviour {
 
 	IEnumerator Starve()
 	{
-		yield return new WaitForSeconds(1);
+		GameObject lComment = Instantiate(lastCommentObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
+		lComment.transform.parent = uiRootInst.transform;
+//		for(int i = 0; i < lastComments.Count; i++)
+//		{
+//
+//		}
+		lComment.GetComponent<UILabel>().text = string.Join(" ", lastComments.ToArray());
+		yield return new WaitForSeconds(5);
+
 		Application.LoadLevel(Application.loadedLevel);
 	}
 
@@ -398,10 +430,10 @@ public class Eating : MonoBehaviour {
 		{
 			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YOU'VE BEEN SEEN EATING, YOU FILTH");
 		}
-		if(starved)
-		{
-			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YYOU ARE DONE EATING!");
-		}
+//		if(starved)
+//		{
+//			GUI.Label (new Rect (Screen.width/2 - 175, Screen.height/2 - 10, 350, 20), "YYOU ARE DONE EATING!");
+//		}
 	}
 
 }
