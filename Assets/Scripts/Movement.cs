@@ -40,7 +40,7 @@ public class Movement : MonoBehaviour {
 		motor.inputMoveDirection = (transform.forward * Input.GetAxis("Vertical")) + (transform.right * Input.GetAxis("Horizontal"));
 //		motor.inputMoveDirection = transform.right * Input.GetAxis("Horizontal");
 //		Debug.Log (transform.forward.z);
-		motor.inputJump = Input.GetKey(KeyCode.Space);
+		motor.inputJump = Input.GetKeyDown(KeyCode.JoystickButton1);
 		
 		
 	}

@@ -68,6 +68,7 @@ public class Eating : MonoBehaviour {
 	private UILabel comboCounterGui;
 	private UILabel goldCounterGui;
 	private UILabel timerGui;
+	private UILabel gameOverGui;
 
 	public List<string> greasyComments;
 	public List<string> healthyComments;
@@ -96,7 +97,8 @@ public class Eating : MonoBehaviour {
 		goldCounterGui = uiRootInst.transform.Find("GoldCount").gameObject.GetComponent<UILabel>();
 		goldCounterGui = uiRootInst.transform.Find("GoldCount").gameObject.GetComponent<UILabel>();
 		timerGui = uiRootInst.transform.Find("Time").gameObject.GetComponent<UILabel>();
-
+		gameOverGui = uiRootInst.transform.Find("GameOver").gameObject.GetComponent<UILabel>();
+		gameOverGui.enabled = false;
 		
 	}
 
@@ -123,7 +125,7 @@ public class Eating : MonoBehaviour {
 //			seconds = "0" + Mathf.RoundToInt(seconds).ToString();
 //		}
 
-		foodEatInterval = foodMeter/ (foodMeterStart);
+		foodEatInterval = foodMeter / foodMeterStart ;
 
 		foodMeter = greaseLevel;
 
@@ -133,7 +135,7 @@ public class Eating : MonoBehaviour {
 		foodbarSprite.fillAmount = foodMeter/foodMeterStart;
 		if(foodPicked)
 		{
-			if(Input.GetKeyDown(KeyCode.JoystickButton1))
+			if(Input.GetKeyDown(KeyCode.JoystickButton2))
 			{
 				if(!takingBite)
 				{
@@ -310,8 +312,7 @@ public class Eating : MonoBehaviour {
 //			Application.LoadLevel(Application.loadedLevel);
 		}
 
-		takingBite = false;
-		eating = false;
+
 		if(foodComponent.health == 0)
 		{
 			StartCoroutine(FoodEaten());
@@ -319,39 +320,11 @@ public class Eating : MonoBehaviour {
 
 		yield return new WaitForSeconds(0.2f);
 		goldBj.SetActive(false);
+		takingBite = false;
+		eating = false;
 	}
 
-	IEnumerator FoodShake()
-	{
-		bool onOff = true;
-		float mTime = 0.1f;
-		bool up = false;;
-		while(onOff)
-		{
-//			food.transform.position = new Vector3 (food.transform.position.x, food.transform.position.y + (mTime/1000), food.transform.position.z);
-//			if(mTime < 1 && !up)
-//			{
-//				mTime += Time.deltaTime * 10;
-//			}
-//			if(mTime > 1 && !up)
-//			{
-//				up = true;
-//			}
-//
-//			if(up)
-//			{
-//				mTime-= Time.deltaTime ;
-//				if(mTime < 0)
-//				{
-//					onOff = false;
-//					Debug.Log ("TEST");
-//				}
-//			}
 
-			yield return null;
-		}
-
-	}
 	IEnumerator FoodEaten()
 	{
 		if(food.GetComponent<Food>().greasy)
@@ -370,6 +343,7 @@ public class Eating : MonoBehaviour {
 			greaseCombo += greaseComboIncrease;
 			combo.GetComponent<UILabel>().text = "X" + greaseCombo;
 			food.gameObject.SetActive(false);
+			foodPicked = false;
 			yield return new WaitForSeconds(1.5f);
 			combo.SetActive(false);
 			comment.SetActive(false);
@@ -383,13 +357,21 @@ public class Eating : MonoBehaviour {
 			comment.GetComponent<UILabel>().text = healthyComments[rng] + "!";
 			lastComments.Add(healthyComments[rng]);
 
-			greaseLevel -= 20;
+			if(greaseLevel > 20)
+			{
+				greaseLevel -= 20;
+			}
+			else{
+				greaseLevel = 0;
+			}
 			greaseCombo = 0;
+			food.gameObject.SetActive(false);
+			foodPicked = false;
 			yield return new WaitForSeconds(1.5f);
 			comment.SetActive(false);
 //			gold += Random.Range(250, 400);
 		}
-		foodPicked = false;
+
 		if(food.gameObject.activeSelf)
 		{
 			food.gameObject.SetActive(false);
@@ -400,6 +382,8 @@ public class Eating : MonoBehaviour {
 
 	IEnumerator Starve()
 	{
+
+		gameOverGui.enabled = true;
 		GameObject lComment = Instantiate(lastCommentObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
 		lComment.transform.parent = uiRootInst.transform;
 //		for(int i = 0; i < lastComments.Count; i++)
