@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Guest : MonoBehaviour {
 	public float walkRadius = 20;
@@ -13,8 +14,13 @@ public class Guest : MonoBehaviour {
 	private Vector3 fwd;
 	public bool seeing;
 	private Eating eating;
+	public float overlapSphereRadius = 5;
+	private bool triggered;
+	private AudioSource aSource;
+	public List<AudioClip> clips;
+	private float temp;
 	void Start () {
-
+		aSource = GetComponent<AudioSource>();
 		player = GameObject.Find("Player").transform;
 		eating = player.GetComponent<Eating>();
 		agent = GetComponent<NavMeshAgent>();
@@ -31,7 +37,36 @@ public class Guest : MonoBehaviour {
 	{
 //		if(seeing) eating.seen = true;
 //		else eating.seen = false;
+		Collider[] hitColliders = Physics.OverlapSphere(this.transform.position, overlapSphereRadius);
+		
+		foreach(Collider col in hitColliders)
+		{
+			if(!triggered)
+			{
+				if(col.gameObject.name == "Player")
+				{
+	//				Debug.Log ("TEST");
+					triggered = true;
+					if(Random.value > 0.5f)
+					{
+						aSource.clip = clips[Random.Range(0, clips.Count)];
+						aSource.pitch = Random.Range(1.2f, 1.4f);
+						aSource.Play();
+					}
+				}
+			}
+		}
 
+		if(triggered)
+		{
+			temp += Time.deltaTime;
+		}
+
+		if(temp > 10)
+		{
+			triggered = false;
+			temp = 0;
+		}
 
 		dist = Vector3.Distance(this.transform.position, finalPosition);
 		if(dist < 2f)

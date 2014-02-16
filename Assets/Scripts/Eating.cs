@@ -58,6 +58,7 @@ public class Eating : MonoBehaviour {
 //	private float seconds;
 	private float timer;
 	public float timerStart = 70;
+	public float timerAdd = 10;
 	private float gold;
 	public float greaseComboIncrease = 1;
 	public GameObject comboObj;
@@ -77,11 +78,14 @@ public class Eating : MonoBehaviour {
 	public List<string> lastComments;
 	private AudioSourceManager audioSourceMngr;
 	private bool temp;
+	private float fillTimer;
+	private float timeBetweenFill;
+	private bool playFill;
 	void Start () 
 	{
 
 		audioSourceMngr = GetComponent<AudioSourceManager>();
-//		audioSourceMngr.PlaySource("AS_Vivaldi",false);
+
 		timer = timerStart;
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Guest")) 
 		{
@@ -105,12 +109,28 @@ public class Eating : MonoBehaviour {
 		timerGui = uiRootInst.transform.Find("Time").gameObject.GetComponent<UILabel>();
 		gameOverGui = uiRootInst.transform.Find("GameOver").gameObject.GetComponent<UILabel>();
 		gameOverGui.enabled = false;
-		
+//		audioSourceMngr.PlaySource("AS_StartHunger" ,false);
+		timeBetweenFill = Random.Range(15, 30);
 	}
 
 	void Update () 
 	{
+		if(fillTimer < timeBetweenFill)
+		{
+			fillTimer += Time.deltaTime;
+		}
+		else
+		{
+			playFill = true;
+			fillTimer = 0;
+			timeBetweenFill = Random.Range(15,30);
+		}
+		if(playFill)
+		{
+			playFill = false;
+			audioSourceMngr.PlaySource("AS_Fill"+ Random.Range(1,3), true);
 
+		}
 		int minutes = Mathf.FloorToInt(timer / 60F);
 		int seconds = Mathf.FloorToInt(timer - minutes * 60);
 		
@@ -256,6 +276,7 @@ public class Eating : MonoBehaviour {
 		if(notSeeingGuests.Count == guests.Count)
 		{
 			seen = false;
+
 		}
 		else seen = true;
 //				Debug.DrawRay(transform.position + new Vector3(0, 1, 0),fwd * sightRange,Color.green);
@@ -300,12 +321,14 @@ public class Eating : MonoBehaviour {
 			float rngGold = Random.Range(850, 1200) * greaseCombo;
 			goldBj.GetComponent<UILabel>().text = "$ " + rngGold;
 			gold += rngGold;
+			audioSourceMngr.PlaySource("AS_Kaching", true);
 		}
 		if(food.GetComponent<Food>().healthy)
 		{
 			float rngGold = Random.Range(200, 400) * greaseCombo;
 			goldBj.GetComponent<UILabel>().text = "$ " + rngGold;
 			gold += rngGold;
+			audioSourceMngr.PlaySource("AS_Kaching2", true);
 		}
 		if((foodMeter + foodGain) < foodMeterStart)
 		{
@@ -364,6 +387,7 @@ public class Eating : MonoBehaviour {
 			combo.GetComponent<UILabel>().text = "X" + greaseCombo;
 			food.gameObject.SetActive(false);
 			foodPicked = false;
+			timer+= timerAdd;
 			yield return new WaitForSeconds(1.5f);
 			combo.SetActive(false);
 			comment.SetActive(false);
@@ -387,6 +411,7 @@ public class Eating : MonoBehaviour {
 			greaseCombo = 0;
 			food.gameObject.SetActive(false);
 			foodPicked = false;
+			timer+= timerAdd;
 			yield return new WaitForSeconds(1.5f);
 			comment.SetActive(false);
 //			gold += Random.Range(250, 400);
