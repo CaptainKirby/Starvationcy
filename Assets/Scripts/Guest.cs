@@ -50,7 +50,7 @@ public class Guest : MonoBehaviour {
 					if(Random.value > 0.5f)
 					{
 						aSource.clip = clips[Random.Range(0, clips.Count)];
-						aSource.pitch = Random.Range(1.2f, 1.4f);
+						aSource.pitch = Random.Range(1.0f, 1.2f);
 						aSource.Play();
 					}
 				}
