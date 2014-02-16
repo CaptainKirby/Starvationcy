@@ -438,7 +438,7 @@ public class Eating : MonoBehaviour {
 //		{
 //
 //		}
-		lComment.GetComponent<UILabel>().text = string.Join(" ", lastComments.ToArray());
+		lComment.GetComponent<UILabel>().text = string.Join(" ", lastComments.ToArray()) + " SLOB!";
 		yield return new WaitForSeconds(1);
 		audioSourceMngr.PlaySource("AS_GameOver", true);
 		yield return new WaitForSeconds(3);
