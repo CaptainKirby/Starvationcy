@@ -310,7 +310,7 @@ public class Eating : MonoBehaviour {
 //		Debug.Log ("BITE!");
 		audioSourceMngr.PlaySource("AS_Munch", true);
 		audioSourceMngr.PlaySource("AS_Munch2", true);
-		audioSourceMngr.PlaySource("AS_Munch3", true);
+//		audioSourceMngr.PlaySource("AS_Munch3", true);
 		eating = true;
 		takingBite = true;
 		foodComponent.health -= 1;
@@ -321,6 +321,7 @@ public class Eating : MonoBehaviour {
 			float rngGold = Random.Range(850, 1200) * greaseCombo;
 			goldBj.GetComponent<UILabel>().text = "$ " + rngGold;
 			gold += rngGold;
+			yield return new WaitForSeconds(0.3f);
 			audioSourceMngr.PlaySource("AS_Kaching", true);
 		}
 		if(food.GetComponent<Food>().healthy)
@@ -328,6 +329,7 @@ public class Eating : MonoBehaviour {
 			float rngGold = Random.Range(200, 400) * greaseCombo;
 			goldBj.GetComponent<UILabel>().text = "$ " + rngGold;
 			gold += rngGold;
+			yield return new WaitForSeconds(0.3f);
 			audioSourceMngr.PlaySource("AS_Kaching2", true);
 		}
 		if((foodMeter + foodGain) < foodMeterStart)
@@ -427,6 +429,7 @@ public class Eating : MonoBehaviour {
 
 	IEnumerator Starve()
 	{
+		caught = false;
 
 		gameOverGui.enabled = true;
 		GameObject lComment = Instantiate(lastCommentObj,uiRootInst.transform.position, Quaternion.identity) as GameObject;
@@ -436,7 +439,9 @@ public class Eating : MonoBehaviour {
 //
 //		}
 		lComment.GetComponent<UILabel>().text = string.Join(" ", lastComments.ToArray());
-		yield return new WaitForSeconds(5);
+		yield return new WaitForSeconds(1);
+		audioSourceMngr.PlaySource("AS_GameOver", true);
+		yield return new WaitForSeconds(3);
 
 		Application.LoadLevel(Application.loadedLevel);
 	}
