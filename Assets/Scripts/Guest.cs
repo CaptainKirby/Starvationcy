@@ -60,8 +60,13 @@ public class Guest : MonoBehaviour {
 		{
 			if(hitRay.transform.gameObject == player.gameObject)
 			{
+				Vector3 forward = transform.TransformDirection(Vector3.forward);
+				Vector3 toOther = player.position - transform.position;
+				if (Vector3.Dot(forward,toOther) > 0){
+
 				Debug.DrawRay(transform.position + new Vector3(0, 1, 0),fwd * sightRange,Color.green);
 				seeing = true;
+				}
 			}
 			else seeing = false;
 		}
