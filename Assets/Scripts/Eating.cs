@@ -73,9 +73,10 @@ public class Eating : MonoBehaviour {
 	public List<string> greasyComments;
 	public List<string> healthyComments;
 	public List<string> lastComments;
+	private AudioSourceManager audioSourceMngr;
 	void Start () 
 	{
-
+		audioSourceMngr = GetComponent<AudioSourceManager>();
 		timer = timerStart;
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Guest")) 
 		{
@@ -161,6 +162,7 @@ public class Eating : MonoBehaviour {
 				food.position = cam.transform.position + new Vector3(cam.transform.forward.x, cam.transform.forward.y - 0.5f, cam.transform.forward.z);
 				food.collider.enabled = false;
 				foodComponent = food.GetComponent<Food>();
+				audioSourceMngr.PlaySource("AS_Grab", true);
 			}
 		}
 		rayHit = RayCast();
@@ -272,6 +274,7 @@ public class Eating : MonoBehaviour {
 	IEnumerator TakeBite()
 	{
 //		Debug.Log ("BITE!");
+		audioSourceMngr.PlaySource("AS_Munch", true);
 		eating = true;
 		takingBite = true;
 		foodComponent.health -= 1;
