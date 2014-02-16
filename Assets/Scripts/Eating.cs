@@ -71,12 +71,17 @@ public class Eating : MonoBehaviour {
 	private UILabel gameOverGui;
 
 	public List<string> greasyComments;
+	public List<AudioSource> greasySounds;
 	public List<string> healthyComments;
+	public List<AudioSource> healthySounds;
 	public List<string> lastComments;
 	private AudioSourceManager audioSourceMngr;
+	private bool temp;
 	void Start () 
 	{
+
 		audioSourceMngr = GetComponent<AudioSourceManager>();
+//		audioSourceMngr.PlaySource("AS_Vivaldi",false);
 		timer = timerStart;
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Guest")) 
 		{
@@ -172,11 +177,19 @@ public class Eating : MonoBehaviour {
 		{
 			if(hit.transform.gameObject.tag == "Food")
 			{
+
+				if(!temp)
+				{
+					temp = true;
+					audioSourceMngr.PlaySource("AS_Hover", true);
+
+				}
 				if(hit.transform.gameObject != prevFood)
 				{
 					prevFood2 = prevFood;
 					if(prevFood2)
 					{
+						temp = false;
 						prevFood2.renderer.material.SetFloat("_EdgeWidth",0);
 					}
 				}
@@ -275,6 +288,8 @@ public class Eating : MonoBehaviour {
 	{
 //		Debug.Log ("BITE!");
 		audioSourceMngr.PlaySource("AS_Munch", true);
+		audioSourceMngr.PlaySource("AS_Munch2", true);
+		audioSourceMngr.PlaySource("AS_Munch3", true);
 		eating = true;
 		takingBite = true;
 		foodComponent.health -= 1;
@@ -308,6 +323,7 @@ public class Eating : MonoBehaviour {
 
 		if(seen)  caught = true;
 		yield return new WaitForSeconds(foodEatInterval/2);
+
 		if(caught)
 		{
 			StartCoroutine(Starve ());
@@ -322,6 +338,7 @@ public class Eating : MonoBehaviour {
 		}
 
 		yield return new WaitForSeconds(0.2f);
+		audioSourceMngr.PlaySource("AS_Burp" + Random.Range(1,3), true);
 		goldBj.SetActive(false);
 		takingBite = false;
 		eating = false;
@@ -340,7 +357,7 @@ public class Eating : MonoBehaviour {
 			int rng = Random.Range(0,greasyComments.Count);
 			comment.GetComponent<UILabel>().text = greasyComments[rng] + "!";
 			lastComments.Add(greasyComments[rng]);
-
+			audioSourceMngr.PlaySource(greasySounds[rng].name, true);
 			greaseLevel += 10;
 
 			greaseCombo += greaseComboIncrease;
@@ -359,7 +376,7 @@ public class Eating : MonoBehaviour {
 			int rng = Random.Range(0,healthyComments.Count);
 			comment.GetComponent<UILabel>().text = healthyComments[rng] + "!";
 			lastComments.Add(healthyComments[rng]);
-
+			audioSourceMngr.PlaySource(healthySounds[rng].name, true);
 			if(greaseLevel > 20)
 			{
 				greaseLevel -= 20;
