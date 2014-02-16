@@ -28,7 +28,7 @@ public class Movement : MonoBehaviour {
 		float Xon = Mathf.Abs (Input.GetAxis ("Joy X")); 
 		
 		if (Xon>.05){
-			transform.Rotate(0, Input.GetAxis("Joy X") * 3, 0); 
+			transform.Rotate(0, Input.GetAxis("Joy X") * 4, 0); 
 		}
 //		Vector3 moveDir = this.transform.TransformDirection(Vector3.forward);
 //		moveDir = moveDir
